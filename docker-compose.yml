@@ -1,0 +1,78 @@
+version: '3'
+
+services:
+  redis-node-1:
+    image: redis:latest
+    ports:
+      - 9001:9001
+    hostname: redis-node-1
+    volumes:
+      - ./9001:/redis
+    command: redis-server /redis/redis.conf
+
+  redis-node-2:
+    image: redis:latest
+    ports:
+      - 9002:9002
+    hostname: redis-node-2
+    volumes:
+      - ./9002:/redis
+    command: redis-server /redis/redis.conf
+
+  redis-node-3:
+    image: redis:latest
+    ports:
+      - 9003:9003
+    hostname: redis-node-3
+    volumes:
+      - ./9003:/redis
+    command: redis-server /redis/redis.conf
+
+  redis-node-4:
+    image: redis:latest
+    ports:
+      - 9004:9004
+    hostname: redis-node-4
+    volumes:
+      - ./9004:/redis
+    command: redis-server /redis/redis.conf
+
+  redis-node-5:
+    image: redis:latest
+    ports:
+      - 9005:9005
+    hostname: redis-node-5
+    volumes:
+      - ./9005:/redis
+    command: redis-server /redis/redis.conf
+  
+  redis-node-6:
+    image: redis:latest
+    ports:
+      - 9006:9006
+    hostname: redis-node-6
+    volumes:
+      - ./9006:/redis
+    command: redis-server /redis/redis.conf
+  
+  redis-cluster-creator:
+    image: redis:latest
+    ports:
+      - 6999:6999
+    command: redis-cli -p 9001 --cluster create redis-node-1:9001 redis-node-2:9002 redis-node-3:9003 redis-node-4:9004 redis-node-5:9005 redis-node-6:9006 --cluster-replicas 1 --cluster-yes
+    depends_on:
+      - redis-node-1
+      - redis-node-2
+      - redis-node-3
+      - redis-node-4
+      - redis-node-5
+      - redis-node-6
+
+  redis-insight:
+    image: redislabs/redisinsight:latest
+    ports:
+      - 8001:8001
+    volumes:
+      - ./redisinsight:/db
+    depends_on:
+      - redis-cluster-creator
